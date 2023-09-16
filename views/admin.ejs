@@ -1,71 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin</title>
-  </head>
-  <body>
+</head>
+<body>
     <h1>Welcome to the Admin Dashboard</h1>
     <form action="/auth/logout" method="GET">
-      <button type="submit">Logout</button>
+        <button type="submit">Logout</button>
     </form>
-
-    <!-- Add a form to delete an employee -->
-    <!-- <h2>Delete Employee</h2>
-    <form action="/auth/delete" method="POST">
-        <label for="usernameToDelete">Username to Delete: </label>
-        <input type="text" id="usernameToDelete" name="username" required>
-        <button type="submit">Delete Employee</button>
-    </form> -->
 
     <!-- Display success or error messages here -->
 
     <h2>Add Employee</h2>
     <form action="/auth/addEmployee" method="POST">
-      <label for="username">Username: </label>
-      <input type="text" id="username" name="username" required />
-      <label for="password">Password: </label>
-      <input type="password" id="password" name="password" required />
-      <button type="submit">Add Employee</button>
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required />
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required />
+        <button type="submit">Add Employee</button>
     </form>
 
-    <a href="/employee"> <!-- Use an anchor tag for GET request --> </a>
     <h1>Employee List</h1>
     <ol>
-      <% employees.forEach(employee => { %>
-      <li><%= employee.username %></li>
-      <form action="/auth/delete" method="POST">
-        <input type="hidden" name="username" value="<%= employee.username %>" />
-        <button type="submit">Delete Employee</button>
-      </form>
-      <form id="edit-form" action="/update" method="POST">
-        <input type="hidden" name="oldUsername" value="<%= employee.username %>" />
-        <input
-          type="text"
-          name="newUsername"
-          placeholder="New Username"
-          required
-          style="display: none;"
-        />
-        <button id="edit-button" type="button">Edit Username</button>
-        <button id="update-button" type="submit" style="display: none;">Update Username</button>
-      </form>
-      <% }); %>
+        <% employees.forEach(employee => { %>
+            <li><%= employee.username %></li>
+            <form action="/auth/delete" method="POST">
+                <input type="hidden" name="username" value="<%= employee.username %>" />
+                <button type="submit">Delete Employee</button>
+            </form>
+            <form id="edit-form" action="/update" method="POST">
+                <input type="hidden" name="oldUsername" value="<%= employee.username %>" />
+                <input
+                    type="text"
+                    name="newUsername"
+                    placeholder="New Username"
+                    required
+                    style="display: none;"
+                />
+                <button id="edit-button" type="button">Edit Username</button>
+                <button id="update-button" type="submit" style="display: none;">Update Username</button>
+            </form>
+
+            <!-- Form for adding performance review -->
+            <form action="/add-performance-review" method="POST">
+                <input type="hidden" name="employeeId" value="<%= employee._id %>" />
+                <label for="performanceTitle">Performance Title:</label>
+                <input type="text" id="performanceTitle" name="title" required />
+                <button type="submit">Add Performance Review</button>
+            </form>
+            <ol data-employees="<%= JSON.stringify(employees) %>" id="performance-reviews-<%= employee._id %>">
+          </ol>
+          
+        <% }); %>
     </ol>
-  </body>
-  <script>
-    // JavaScript to handle button click and show/hide elements
-    const editButton = document.getElementById('edit-button');
-  const updateButton = document.getElementById('update-button');
-  const newUsernameInput = document.querySelector('input[name="newUsername"]');
-  
-  editButton.addEventListener('click', () => {
-    // Show the input field and change button text
-    newUsernameInput.style.display = 'block';
-    editButton.style.display = 'none';
-    updateButton.style.display = 'block';
+</body>
+<script>
+  // JavaScript to handle button click and show/hide elements
+  const editButtons = document.querySelectorAll('.edit-button');
+  const updateButtons = document.querySelectorAll('.update-button');
+  const newUsernameInputs = document.querySelectorAll('.new-username-input');
+
+  editButtons.forEach((editButton, index) => {
+    editButton.addEventListener('click', () => {
+      // Show the input field and change button text
+      newUsernameInputs[index].style.display = 'block';
+      editButton.style.display = 'none';
+      updateButtons[index].style.display = 'block';
+    });
   });
-  </script>
-  
+  document.addEventListener('DOMContentLoaded', async () => {
+    const employeesList = await document.querySelector('ol[data-employees]');
+    const employeesData = await JSON.parse(employeesList.getAttribute('data-employees'));
+
+    employeesData.forEach(async(employee) => {
+      const performanceReviewsContainer = document.getElementById(`performance-reviews-${employee._id}`);
+
+      const response= await fetch(`/api/employee/${employee._id}/performance-review`)
+      // console.log(await response.json()); 
+      const reviews = await response.json();
+
+      const ol = await document.createElement('ol'); // Create a new ordered list
+      reviews.forEach(review => {
+        const listItem = document.createElement('li');
+        listItem.innerHTML = `
+          <strong>Performance Title:</strong> ${review.title}<br>
+          ${review.feedback.feedbackText ? review.feedback.feedbackText : 'No feedback provided'}
+        `;
+       ol.appendChild(listItem); // Append each review to the ordered list
+      });
+
+      performanceReviewsContainer.appendChild(ol); 
+        
+    });
+  });
+</script>
+
 </html>

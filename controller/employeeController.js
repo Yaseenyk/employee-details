@@ -1,10 +1,14 @@
 const Employee = require('../modules/Employee');
 
 const addEmployee = async(req,res)=>{
-    const {name,age,designation} = req.body;
-    
-    res.status(200).json({updated:'Successfull', data : req.body})
+    try {
+        const employees = await Employee.find({ role: 'employee' });
+        res.render('admin', { employees });
+     } catch (error) {
+        return res.status(500).json({ error: 'Internal Server Error' });
+     }
 };
+
 
 
 module.exports = {

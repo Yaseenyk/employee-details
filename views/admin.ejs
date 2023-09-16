@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin</title>
+</head>
+<body>
+    <h1>Welcome to the Admin Dashboard</h1>
+    <form action="/auth/logout" method="GET">
+        <button type="submit">Logout</button>
+    </form>
+
+    <!-- Add a form to delete an employee -->
+    <!-- <h2>Delete Employee</h2>
+    <form action="/auth/delete" method="POST">
+        <label for="usernameToDelete">Username to Delete: </label>
+        <input type="text" id="usernameToDelete" name="username" required>
+        <button type="submit">Delete Employee</button>
+    </form> -->
+
+    <!-- Display success or error messages here -->
+
+    <h2>Add Employee</h2>
+    <form action="/auth/addEmployee" method="POST">
+        <label for="username">Username: </label>
+        <input type="text" id="username" name="username" required>
+        <label for="password">Password: </label>
+        <input type="password" id="password" name="password" required>
+        <button type="submit">Add Employee</button>
+    </form>
+    
+        <a href="/employee"> <!-- Use an anchor tag for GET request -->
+            
+        </a>
+        <h1>Employee List</h1>
+        <ol>
+            <% employees.forEach(employee => { %>
+                <li><%= employee.username %></li>
+                <form action="/auth/delete" method="POST">
+                    <input type="hidden" name="username" value="<%= employee.username %>">
+                    <button type="submit">Delete Employee</button>
+                </form>
+            <% }); %>
+        </ol>
+   
+    
+    
+    
+    
+
+</body>
+</html>

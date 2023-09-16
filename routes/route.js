@@ -1,9 +1,12 @@
 const express = require('express');
-const employeeController = require('../controller/employeeController');
-const adminController = require('../controller/adminController');
 const router = express.Router();
+const employeeController = require('../controller/employeeController');
+// const adminController = require('../controllers/adminController');
 
-router.get('/admin',employeeController.addEmployee);
-router.get('/employee',adminController.viewEmployee);
-// router.post('/addEmployee', employeeController.addEmployeeHere);
+// Route for listing employees
+router.get('/admin', employeeController.addEmployee);
+
+// Route for updating an employee
+router.post('/update', employeeController.updateEmployee);
+
 module.exports = router;

@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin</title>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Welcome to the Admin Dashboard</h1>
     <form action="/auth/logout" method="GET">
-        <button type="submit">Logout</button>
+      <button type="submit">Logout</button>
     </form>
 
     <!-- Add a form to delete an employee -->
@@ -23,31 +23,49 @@
 
     <h2>Add Employee</h2>
     <form action="/auth/addEmployee" method="POST">
-        <label for="username">Username: </label>
-        <input type="text" id="username" name="username" required>
-        <label for="password">Password: </label>
-        <input type="password" id="password" name="password" required>
-        <button type="submit">Add Employee</button>
+      <label for="username">Username: </label>
+      <input type="text" id="username" name="username" required />
+      <label for="password">Password: </label>
+      <input type="password" id="password" name="password" required />
+      <button type="submit">Add Employee</button>
     </form>
-    
-        <a href="/employee"> <!-- Use an anchor tag for GET request -->
-            
-        </a>
-        <h1>Employee List</h1>
-        <ol>
-            <% employees.forEach(employee => { %>
-                <li><%= employee.username %></li>
-                <form action="/auth/delete" method="POST">
-                    <input type="hidden" name="username" value="<%= employee.username %>">
-                    <button type="submit">Delete Employee</button>
-                </form>
-            <% }); %>
-        </ol>
-   
-    
-    
-    
-    
 
-</body>
+    <a href="/employee"> <!-- Use an anchor tag for GET request --> </a>
+    <h1>Employee List</h1>
+    <ol>
+      <% employees.forEach(employee => { %>
+      <li><%= employee.username %></li>
+      <form action="/auth/delete" method="POST">
+        <input type="hidden" name="username" value="<%= employee.username %>" />
+        <button type="submit">Delete Employee</button>
+      </form>
+      <form id="edit-form" action="/update" method="POST">
+        <input type="hidden" name="oldUsername" value="<%= employee.username %>" />
+        <input
+          type="text"
+          name="newUsername"
+          placeholder="New Username"
+          required
+          style="display: none;"
+        />
+        <button id="edit-button" type="button">Edit Username</button>
+        <button id="update-button" type="submit" style="display: none;">Update Username</button>
+      </form>
+      <% }); %>
+    </ol>
+  </body>
+  <script>
+    // JavaScript to handle button click and show/hide elements
+    const editButton = document.getElementById('edit-button');
+  const updateButton = document.getElementById('update-button');
+  const newUsernameInput = document.querySelector('input[name="newUsername"]');
+  
+  editButton.addEventListener('click', () => {
+    // Show the input field and change button text
+    newUsernameInput.style.display = 'block';
+    editButton.style.display = 'none';
+    updateButton.style.display = 'block';
+  });
+  </script>
+  
 </html>

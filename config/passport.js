@@ -1,5 +1,5 @@
 const LocalStrategy = require('passport-local').Strategy;
-const Employee = require('../modules/Employee');
+const Employee = require('../models/Employee');
 const bcrypt = require('bcrypt');
 
 module.exports = (passport) => {

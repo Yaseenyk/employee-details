@@ -1,6 +1,4 @@
 const express = require('express');
-const Routes = require('./routes/route');
-const auth = require('./routes/auth');
 const app = express();
 const path = require('path');
 const bodyParser = require('body-parser')
@@ -15,8 +13,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(cookieParser());
-app.use('/',Routes);
-app.use('/auth',auth);
 app.use(passport.initialize())
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));

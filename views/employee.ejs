@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Document</title>
+</head>
+<body>
+    <div class="feedback-block">
+        Welcome Employee
+    </div>
+    <div class="Feedback">
+        You're Pending Feedback's are : 
+        <ul>
+            <% performanceData.forEach(feedback => { %>
+                <li><%= feedback.title %></li>
+            <% }); %>
+        </ul>
+    </div>
+    <h1>Please Give Feedback Here : </h1>
+    <form action="/employee/feedBack" method="POST">
+        <label for="feedback">Feedback:</label>
+        <textarea id="feedback" name="feedback" rows="4" cols="50"></textarea><br>
+        <button type="submit">Submit Feedback</button>
+        <input type="hidden" name="performanceId" value="<%= performanceId %>">
+    </form>
+</body>
+</html>

@@ -22,6 +22,10 @@ const performanceSchema = mongoose.Schema({
             required: true,
         },
           feedbackText: String,
+          feedbackDone:{
+            type:Boolean,
+            default: false
+          }
         },
       ],
 });

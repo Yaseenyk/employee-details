@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard</title>
+  </head>
+  <body>
+    <h1>Admin Dashboard</h1>
+    <h1>Employee List</h1>
+    <ul>
+      <% employees.forEach((employee, index) => { %>
+      <li>
+        <span class="employee-username"><%= employee.username %></span>
+        <form
+          action="/admin/update/<%= employee._id %>"
+          method="POST"
+          style="display: inline"
+        >
+          <input
+            type="text"
+            class="edit-username-input"
+            style="display: none"
+            name="username"
+            value="<%= employee.username %>"
+          />
+          <button type="button" class="edit-button">Edit</button>
+          <button type="submit" class="update-button" style="display: none">
+            Update
+          </button>
+        </form>
+        <form
+          action="/admin/delete/<%= employee._id %>"
+          method="POST"
+          style="display: inline"
+        >
+          <button type="submit">Delete</button>
+        </form>
+        <div class="performance-data" style="display: none">
+          <!-- Content will be added dynamically -->
+        </div>
+        <form
+          action="/performance/show/<%= employee._id %>"
+          method="POST"
+          style="display: inline"
+        >
+          <input type="hidden" name="employeeId" value="<%= employee._id %>" />
+          <button type="submit" class="show-performance-button">
+            Show Performance
+          </button>
+        </form>
+      </li>
+      <% }); %>
+    </ul>
+    <h1>Add Performance for Employess</h1>
+    <form id="addPerformanceForm" action="/admin/addPerformance" method="POST">
+      <select name="employeeId">
+        <% employees.forEach((employee) => { %>
+        <option value="<%= employee._id %>"><%= employee.username %></option>
+        <% }); %>
+      </select>
+      <input
+        type="text"
+        name="performanceData"
+        id="performanceInput"
+        placeholder="Enter performance data"
+      />
+      <button type="submit">Add Performance</button>
+    </form>
+    <form action="/admin/assignEmployee" method="POST">
+      <h1>Assign Employee to give feedback</h1>
+      <label>Assign Employee:</label>
+      <select name="assignedTo">
+        <% employees.forEach((employee) => { %>
+        <option value="<%= employee._id %>"><%= employee.username %></option>
+        <% }); %>
+      </select>
+      <label>Assigned Employee :</label>
+      <select name="reviewer">
+        <% employees.forEach((employee) => { %>
+        <option value="<%= employee._id %>"><%= employee.username %></option>
+        <% }); %>
+      </select>
+      <button type="submit">Assign Employee</button>
+    </form>
+    <div class="New">
+        <h1>View Daily Feedbacks</h1>
+        <% if (employeesWithFeedback.length > 0) { %>
+            <ul>
+                <% employeesWithFeedback.forEach((employeeId) => { %>
+                    <% const employee = employees.find(emp => emp._id === employeeId); %>
+                    <li><%= employee.username %> has given performance feedback.</li>
+                <% }); %>
+            </ul>
+        <% } else { %>
+            <p>No feedbacks to show.</p>
+        <% } %>
+    </div>
+    <script>
+      document.querySelectorAll(".edit-button").forEach((button, index) => {
+        button.addEventListener("click", (e) => {
+          e.preventDefault();
+
+          const usernameSpan =
+            document.querySelectorAll(".employee-username")[index];
+          const editInput = document.querySelectorAll(".edit-username-input")[
+            index
+          ];
+          const updateButton =
+            document.querySelectorAll(".update-button")[index];
+
+          usernameSpan.style.display = "none";
+          editInput.style.display = "inline-block";
+          updateButton.style.display = "inline-block";
+          button.style.display = "none";
+        });
+      });
+      // const showButton = document.querySelectorAll('show-performance-button');
+      document
+        .querySelectorAll(".show-performance-button")
+        .forEach((button, index) => {
+          button.addEventListener("click", async (e) => {
+            e.preventDefault();
+
+            const employeeId = e.target
+              .closest("form")
+              .querySelector('input[name="employeeId"]').value;
+            const performanceDataDiv =
+              document.querySelectorAll(".performance-data")[index];
+
+            try {
+              const response = await fetch(`/admin/performance/${employeeId}`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                // You can add any POST data here if required
+              });
+              // const performance = await response.json();
+              const performanceData = await response.json();
+              // console.log(performance && performance.length > 0);
+              if (performanceData && performanceData.length > 0) {
+                // Build and display the performance data
+                const performanceHTML = performanceData
+                  .map(
+                    (item) =>
+                      `<span class="employee-performance">${item.title}</span>`
+                  )
+                  .join("");
+                performanceDataDiv.innerHTML = performanceHTML;
+                performanceDataDiv.style.display = "block";
+                // showButton.style.display='none';
+                button.style.display = "none";
+              } else {
+                performanceDataDiv.innerHTML = "No performance data available.";
+                performanceDataDiv.style.display = "block";
+                button.style.display = "none";
+              }
+            } catch (error) {
+              console.error(error);
+              performanceDataDiv.innerHTML = "Error fetching performance data.";
+              performanceDataDiv.style.display = "block";
+              button.style.display = "none";
+            }
+          });
+        });
+    </script>
+  </body>
+</html>
